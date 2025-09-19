@@ -1,4 +1,4 @@
-import { TypeOfHamper } from "../types/type";
+import { TypeHeader, TypeOfHamper } from "../types/type";
 
 export const HAMPERS: TypeOfHamper[] = [
   {
@@ -67,3 +67,52 @@ export const HAMPERS: TypeOfHamper[] = [
     details: ["Ragi Choco Almond cookie", "Kaju Jaggery Biscuit", "Masala Toast"],
   },
 ];
+
+
+export const HamperHeader: TypeHeader[] = [
+     {
+        id:0,
+        name: "S.No.",
+
+    },
+    {
+        id:1,
+        name: "Name",
+
+    },
+     {
+        id:2,
+        name: "Contact Number",
+
+    },
+      {
+        id:3,
+        name: "Email",
+
+    },
+      {
+        id:4,
+        name: "Company Name",
+
+    },
+    {
+        id:5,
+        name: "Company Address",
+
+    },
+    {
+        id:6,
+        name: "Product Name",
+
+    },
+     {
+        id:7,
+        name: "Quantity",
+
+    },
+     {
+        id:8,
+        name: "Price",
+
+    }
+]

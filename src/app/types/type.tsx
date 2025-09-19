@@ -6,7 +6,8 @@ export type TypeOfUserDetails = {
     price: string;
     companyName: string;
     companyAddress: string;
-    email:""
+    email:"",
+    id?: number;
 }
 
 export type TypeOfHamper = {
