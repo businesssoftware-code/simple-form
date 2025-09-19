@@ -1,18 +1,23 @@
 export type TypeOfUserDetails = {
      contactPerson: string;
     mobileNumber: string;
-    quantity: number;
-    hamper: string;
-    price: string;
     companyName: string;
     companyAddress: string;
     email:"",
     id?: number;
+    products: TypeOfSelectedProducts[];
+}
+
+export type TypeOfSelectedProducts = {
+    id: number;
+    productName: string;
+    qty: number;
+    price: number;
 }
 
 export type TypeOfHamper = {
 
-  id: string;
+  id: number;
   name: string;
   price: number;
   type: string;

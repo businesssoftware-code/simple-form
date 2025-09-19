@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { TypeHeader, TypeOfResponseOfObject } from "../types/type";
 
-
 interface TableProps {
   tableHeader: TypeHeader[];
   data?: TypeOfResponseOfObject[];
@@ -68,13 +67,13 @@ const DynamicTable: React.FC<TableProps> = ({
 
   return (
     <div className="overflow-x-auto bg-white pt-4 pb-4 pl-2 pr-2 rounded-lg">
-      <table className="min-w-full">
-        <thead>
+      <table className="min-w-full border border-gray-300 border-collapse">
+        <thead className="bg-gray-100">
           <tr>
             {tableHeader?.map((item: TypeHeader, index: number) => (
               <th
                 key={item.id}
-                className={`whitespace-nowrap py-2 px-4 
+                className={`whitespace-nowrap py-2 px-4 border border-gray-300
                   ${item?.sorting ? "cursor-pointer" : "cursor-default"}
                   ${headerBold ? "font-semibold" : "font-medium"} 
                   ${fontSize ? `text-[${fontSize}]` : "text-[14px]"} 
@@ -122,7 +121,7 @@ const DynamicTable: React.FC<TableProps> = ({
                     return (
                       <td
                         key={`${item.id}-${key}`}
-                        className="py-2 px-4 my-2 text-left"
+                        className="py-2 px-4 my-2 text-left border border-gray-300"
                       >
                         <Component
                           handleDelete={handleDelete}
@@ -138,7 +137,7 @@ const DynamicTable: React.FC<TableProps> = ({
                     return key === "id" ? (
                       <td
                         key={key}
-                        className={`py-2 px-4 text-left ${
+                        className={`py-2 px-4 text-left border border-gray-300 ${
                           fontSize ? `text-[${fontSize}]` : "text-[14px]"
                         }`}
                       >
@@ -148,7 +147,7 @@ const DynamicTable: React.FC<TableProps> = ({
                       key !== "id" && (
                         <td
                           key={key}
-                          className={`py-2 px-4 text-left ${
+                          className={`py-2 px-4 text-left border border-gray-300 ${
                             fontSize ? `text-[${fontSize}]` : "text-[14px]"
                           }`}
                         >
@@ -171,7 +170,7 @@ const DynamicTable: React.FC<TableProps> = ({
             <tr>
               <td
                 colSpan={tableHeader?.length}
-                className="text-center py-4"
+                className="text-center py-4 border border-gray-300"
               >
                 No data available
               </td>
