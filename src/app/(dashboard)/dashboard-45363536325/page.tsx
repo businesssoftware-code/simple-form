@@ -35,6 +35,7 @@ const AsyncDashboardHamperPage = async() => {
             address:string,
             products:[
                 {
+                    id:number,
                     productName:string,
                     qty:number,
                     price:number
@@ -48,9 +49,22 @@ const AsyncDashboardHamperPage = async() => {
                 email:el.email,
                 companyName:el.companyName,
                 companyAddress: el?.address,
-                product: el?.products?.[0]?.productName,
-                quantity: el?.products?.[0]?.qty,
-                price: el?.products?.[0]?.price
+                product: <div>
+                    {
+                        el?.products.map((product)=>{
+
+                            return <p key={product?.id}>
+
+                                {
+                                    product?.productName + " - " + product?.qty
+                                }
+
+                            </p>
+                    
+
+                })
+                    }
+                </div>
 
             }
         })

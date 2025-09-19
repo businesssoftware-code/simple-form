@@ -2,7 +2,7 @@ import { TypeHeader, TypeOfHamper } from "../types/type";
 
 export const HAMPERS: TypeOfHamper[] = [
   {
-    id: "gold",
+    id: 1,
     name: "GOLD",
     price: 1599,
     type: "Premium Gift Box",
@@ -17,7 +17,7 @@ export const HAMPERS: TypeOfHamper[] = [
     ],
   },
   {
-    id: "silver1",
+    id: 2,
     name: "SILVER 1",
     price: 799,
     type: "Jute Bag",
@@ -32,7 +32,7 @@ export const HAMPERS: TypeOfHamper[] = [
     ],
   },
   {
-    id: "silver2",
+    id: 3,
     name: "SILVER 2",
     price: 799,
     type: "Jute Bag",
@@ -47,7 +47,7 @@ export const HAMPERS: TypeOfHamper[] = [
     ],
   },
   {
-    id: "bronze",
+    id: 4,
     name: "BRONZE",
     price: 499,
     type: "Jute Bag",
@@ -60,7 +60,7 @@ export const HAMPERS: TypeOfHamper[] = [
     ],
   },
   {
-    id: "lite",
+    id: 5,
     name: "LITE",
     price: 299,
     type: "Jute Bag",
@@ -105,14 +105,4 @@ export const HamperHeader: TypeHeader[] = [
         name: "Product Name",
 
     },
-     {
-        id:7,
-        name: "Quantity",
-
-    },
-     {
-        id:8,
-        name: "Price",
-
-    }
 ]

@@ -11,6 +11,35 @@ type TypeOfPageProps = {
 };
 
 const MainPage: React.FC<TypeOfPageProps> = ({ data }) => {
+
+
+
+const extractTextFromJSX = (element: unknown): string => {
+  if (!element) return "";
+
+  // String
+  if (typeof element === "string") return element;
+
+  // Number
+  if (typeof element === "number") return String(element);
+
+  // Array (children could be strings or JSX)
+  if (Array.isArray(element)) {
+    return element.map((child) => extractTextFromJSX(child)).join(", ");
+  }
+
+  // React element with children
+  if (
+    typeof element === "object" &&
+    "props" in (element as React.JSX.Element) &&
+    (element as React.JSX.Element).props?.children
+  ) {
+    return extractTextFromJSX((element as React.JSX.Element).props.children);
+  }
+
+  return "";
+};
+
   const generateCSV = (usersData: TypeOfResponseOfObject[]): string => {
     const tableHeaders: string[] = [
       "S. No.",
@@ -20,8 +49,6 @@ const MainPage: React.FC<TypeOfPageProps> = ({ data }) => {
       "Company Name",
       "Company Address",
       "Product",
-      "Quantity",
-      "Price",
     ];
 
     // Prepare CSV data
@@ -30,7 +57,15 @@ const MainPage: React.FC<TypeOfPageProps> = ({ data }) => {
     // Add Table Headers
     csvData.push(tableHeaders);
 
+    console.log(usersData, "usersData")
+
     usersData.forEach((data, index) => {
+
+
+        const productsString = extractTextFromJSX(data?.product);
+    
+ 
+
       const row: (string | number | null)[] = [
         index + 1,
         data?.name as string,
@@ -38,9 +73,7 @@ const MainPage: React.FC<TypeOfPageProps> = ({ data }) => {
         data?.email as string,
         data?.companyName as string,
         data?.companyAddress as string,
-        data?.product as string,
-        data?.quantity as string,
-        data?.price as string,
+        productsString
       ];
       csvData.push(row);
     });
