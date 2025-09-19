@@ -11,43 +11,43 @@ import { TypeOfUserDetails } from "./types/type";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import HampersSelector from "./components/hamper-selector";
-import { HAMPERS } from "./constant/contstant";
 import { isValidMobile } from "./utils/functions";
 import { getErrorMessage, publicAPI } from "./utils/axios";
 
 const Slider = dynamic(() => import("react-slick"), { ssr: false });
 
 const UserCreation: React.FC = () => {
-
-
-
   const [userDetails, setUserDetails] = useState<TypeOfUserDetails>({
     contactPerson: "",
     mobileNumber: "",
-    quantity: 0,
-    hamper: "",
-    price: "",
     companyName: "",
     companyAddress: "",
     email: "",
+    products: [],
   });
 
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [userRegistered, setUserRegistered] = useState<boolean>(false);
 
   const bookTheTicket = async () => {
     if (
       !userDetails.mobileNumber ||
       !userDetails.contactPerson ||
-      !userDetails.quantity ||
-      !userDetails.hamper ||
-      !userDetails.price ||
       !userDetails.companyName ||
       !userDetails.companyAddress
     ) {
       setError(true);
       toast.error("Please fill all the required fields.");
       return;
+    }
+
+    if( userDetails.products?.length === 0){
+
+      setError(true);
+      toast.error("Please select at least 1 quantity in one of the hampers");
+      return;
+
     }
 
     if (!isValidMobile(userDetails.mobileNumber)) {
@@ -65,12 +65,22 @@ const UserCreation: React.FC = () => {
       const payload = {
         name: userDetails.contactPerson,
         contactNumber: userDetails.mobileNumber,
-        quantity: userDetails.quantity,
-        hamper: userDetails.hamper,
-        price: userDetails.price,
         companyName: userDetails.companyName,
         address: userDetails.companyAddress,
         email: userDetails.email ?? undefined,
+        products:  userDetails.products?.length === 0 ? [] : (userDetails.products?.filter((el)=>el.qty > 0)?.length > 0
+
+        ?
+
+        userDetails.products?.filter((el)=>el.qty > 0)?.map((product) => ({
+          productName: product.productName,
+          qty: product.qty,
+          price: isNaN(Number(product.price)) ? 0 : Number(product.price),
+        }))
+        
+        : []
+      
+      )
       };
 
       const response = await publicAPI.post("/enquiry", {
@@ -79,24 +89,16 @@ const UserCreation: React.FC = () => {
         address: payload?.address,
         email: payload?.email,
         contactNumber: payload?.contactNumber,
-        products: [
-          {
-            productName: payload.hamper,
-            qty: payload.quantity,
-            price: isNaN(Number(payload.price)) ? 0 : Number(payload.price),
-          },
-        ]
+        products: payload?.products,
       });
 
       if (response?.status === 201) {
-        toast.success("Our team will call you shortly!", {
-          id: toastId,
-          duration: 3000,
-        });
+        toast.dismiss(toastId);
+        setUserRegistered(true);
 
         setTimeout(() => {
-          toast.dismiss(toastId);
-        }, 2000);
+          setUserRegistered(false);
+        }, 4000);
 
         resetFields();
       } else {
@@ -124,12 +126,10 @@ const UserCreation: React.FC = () => {
     setUserDetails({
       contactPerson: "",
       mobileNumber: "",
-      quantity: 0,
-      hamper: "",
-      price: "",
       companyName: "",
       companyAddress: "",
       email: "",
+      products: [],
     });
   };
 
@@ -209,110 +209,154 @@ const UserCreation: React.FC = () => {
         </Slider>
       </div>
 
-      <div className=" pl-6 pr-6 bg-white pt-8 rounded-custom-xl">
-        <div>
-          <HampersSelector
-            value={
-              HAMPERS?.find((item) => item.name === userDetails.hamper)
-                ? (HAMPERS?.find((item) => item.name === userDetails.hamper)
-                    ?.id as string)
-                : ""
-            }
-            onChange={(id, price, name) =>
-              setUserDetails((prev) => ({
-                ...prev,
-                hamper: name,
-                price: String(price),
-              }))
-            }
-          />
+      {userRegistered ? (
+        <div className="flex flex-col items-center justify-center bg-primary border border-green-200 rounded-2xl text-center shadow-sm mt-8 w-[90vw] m-auto p-6">
+          <p className="text-lg font-semibold text-white">
+            ✅ Query Submitted
+          </p>
+          <p className="mt-2 text-sm text-white">
+            Our team will contact you shortly
+          </p>
+        </div>
+      ) : (
+        <div className=" pl-6 pr-6 bg-white pt-8 rounded-custom-xl">
+          <div>
+            <HampersSelector
+              value={userDetails?.products?.map((el) => {
+                return {
+                  id: el.id,
+                  quantity: el.qty,
+                };
+              })} // or use userDetails.hamper if that's what you store
+              onChange={(
+                id: number,
+                price: number,
+                name: string,
+                quantity: number
+              ) => {
+                setUserDetails((prev) => {
+                  const products = Array.isArray(prev.products)
+                    ? [...prev.products]
+                    : [];
 
-          <EventInputField
-            error={error}
-            errorContactNumber={false}
-            errorEmail={false}
-            handleChange={handleChange}
-            name="contactPerson"
-            value={userDetails.contactPerson}
-            placeholder="Enter your name here"
-            label="Your Name"
-            required={true}
-            type="text"
-          />
+                  const idx = products.findIndex((p) => p.id === id);
 
-          <EventInputField
-            error={error}
-            errorContactNumber={false}
-            errorEmail={false}
-            handleChange={handleChange}
-            name="email"
-            value={userDetails.email}
-            placeholder="Enter your mail here"
-            label="Your Email"
-            required={false}
-            type="text"
-          />
+                  if (quantity === 0) {
+                    if (idx === -1) {
+                      return prev;
+                    }
+                    const updated = products.filter((p) => p.id !== id);
 
-          <EventInputField
-            error={error}
-            errorContactNumber={false}
-            errorEmail={false}
-            handleChange={handleChange}
-            name="mobileNumber"
-            value={userDetails.mobileNumber}
-            placeholder="Enter your contact number"
-            label="Contact Number"
-            required={true}
-            type="text"
-          />
+                    return {
+                      ...prev,
+                      products: updated,
+                    };
+                  }
 
-          <EventInputField
-            error={error}
-            errorContactNumber={false}
-            errorEmail={false}
-            handleChange={handleChange}
-            name="quantity"
-            value={userDetails.quantity ? String(userDetails.quantity) : ""}
-            placeholder="Enter the quantity"
-            label="Quantity"
-            required={true}
-            type="number"
-          />
+                  // quantity > 0 -> add or update
+                  const newProduct = {
+                    id,
+                    productName: name,
+                    price,
+                    qty: quantity,
+                  };
 
-          <EventInputField
-            error={error}
-            errorContactNumber={false}
-            errorEmail={false}
-            handleChange={handleChange}
-            name="companyName"
-            value={userDetails.companyName}
-            placeholder="Company Name"
-            label="Company Name"
-            required={true}
-            type="text"
-          />
+                  if (idx === -1) {
+                    // add new product
+                    return {
+                      ...prev,
+                      products: [...products, newProduct],
+                    };
+                  } else {
+                    // update existing product
+                    const updated = products.map((p) =>
+                      p.id === id
+                        ? { ...p, productName: name, price, qty: quantity }
+                        : p
+                    );
+                    return {
+                      ...prev,
+                      products: updated,
+                    };
+                  }
+                });
+              }}
+            />
 
-          <EventInputField
-            error={error}
-            errorContactNumber={false}
-            errorEmail={false}
-            handleChange={handleChange}
-            name="companyAddress"
-            value={userDetails.companyAddress}
-            placeholder="Company Address"
-            label="Company Address"
-            required={true}
-            type="text"
+            <EventInputField
+              error={error}
+              errorContactNumber={false}
+              errorEmail={false}
+              handleChange={handleChange}
+              name="contactPerson"
+              value={userDetails.contactPerson}
+              placeholder="Enter your name here"
+              label="Your Name"
+              required={true}
+              type="text"
+            />
+
+            <EventInputField
+              error={error}
+              errorContactNumber={false}
+              errorEmail={false}
+              handleChange={handleChange}
+              name="email"
+              value={userDetails.email}
+              placeholder="Enter your mail here"
+              label="Your Email"
+              required={false}
+              type="text"
+            />
+
+            <EventInputField
+              error={error}
+              errorContactNumber={false}
+              errorEmail={false}
+              handleChange={handleChange}
+              name="mobileNumber"
+              value={userDetails.mobileNumber}
+              placeholder="Enter your contact number"
+              label="Contact Number"
+              required={true}
+              type="text"
+            />
+
+            <EventInputField
+              error={error}
+              errorContactNumber={false}
+              errorEmail={false}
+              handleChange={handleChange}
+              name="companyName"
+              value={userDetails.companyName}
+              placeholder="Company Name"
+              label="Company Name"
+              required={true}
+              type="text"
+            />
+
+            <EventInputField
+              error={error}
+              errorContactNumber={false}
+              errorEmail={false}
+              handleChange={handleChange}
+              name="companyAddress"
+              value={userDetails.companyAddress}
+              placeholder="Company Address"
+              label="Company Address"
+              required={true}
+              type="text"
+            />
+          </div>
+
+          <EventButton
+            id={123}
+            handleClick={() => !loading && bookTheTicket()}
+            text={loading ? "Please Wait..." : "Proceed"}
+            imageName={"right-arrow"}
           />
         </div>
-
-        <EventButton
-          id={123}
-          handleClick={() => !loading && bookTheTicket()}
-          text={loading ? "Please Wait..." : "Proceed"}
-          imageName={"right-arrow"}
-        />
-      </div>
+      )}
     </>
   );
 };
