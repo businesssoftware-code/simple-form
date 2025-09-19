@@ -35,12 +35,19 @@ const UserCreation: React.FC = () => {
       !userDetails.mobileNumber ||
       !userDetails.contactPerson ||
       !userDetails.companyName ||
-      !userDetails.companyAddress ||
-      userDetails.products?.length === 0
+      !userDetails.companyAddress
     ) {
       setError(true);
       toast.error("Please fill all the required fields.");
       return;
+    }
+
+    if( userDetails.products?.length === 0){
+
+      setError(true);
+      toast.error("Please select at least 1 quantity in one of the hampers");
+      return;
+
     }
 
     if (!isValidMobile(userDetails.mobileNumber)) {
