@@ -17,6 +17,7 @@
     "html-react-parser": "^5.2.5",
     "lucide-react": "^0.544.0",
     "next": "14.2.18",
+    "papaparse": "^5.5.3",
     "raw-body": "^3.0.0",
     "razorpay": "^2.9.6",
     "react": "^18",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/papaparse": "^5.3.16",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-slick": "^0.23.13",
